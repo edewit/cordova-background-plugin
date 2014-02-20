@@ -28,11 +28,11 @@ var backgroundFetch = {
 
     /**
      * Registers the device for background fetch.
-     * @param {Function} success - callback to be executed to check if there is content availble
+     * @param {String} callback - callback to be executed to check if there is content availble
      * @returns {void}
      */
     register: function(callback) {
-        return exec(callback, null, 'BackgroundFetch', 'register', []);
+        return exec(null, null, 'BackgroundFetch', 'register', [{'callback': callback}]);
     },
 
     /**
@@ -41,7 +41,10 @@ var backgroundFetch = {
      * @returns {void}
      * @example
         
-        backgroundFetch.register(function() {
+        backgroundFetch.register({'ecb': 'fetchingContent'});
+        ...
+
+        function fetchingContent() {
             console.log('fetching stuff in background');
             //... actual fetching
             // if depening if there was new data or not...

@@ -20,11 +20,15 @@
 
 @implementation BackgroundPlugin
 
-@synthesize callbackId;
+@synthesize callback;
 @synthesize completionHandler;
 
 - (void)register:(CDVInvokedUrlCommand*)command {
-    self.callbackId = command.callbackId;
+    NSLog(@"register");
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert];
+
+    NSMutableDictionary *options = [command.arguments objectAtIndex:0];
+    self.callback = [options objectForKey:@"callback"];
 }
 
 - (void)setContentAvailable:(CDVInvokedUrlCommand*)command {
@@ -38,9 +42,9 @@
     NSLog(@"Background Fetch");
 
     self.completionHandler = handler;
-    if (self.callbackId) {
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+    if (self.callback) {
+        NSString *jsCallBack = [NSString stringWithFormat:@"%@();", self.callback];
+        [self.webView stringByEvaluatingJavaScriptFromString:jsCallBack];
     }
 }
 

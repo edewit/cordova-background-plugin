@@ -31,7 +31,7 @@
 
 typedef void(^Completion)(UIBackgroundFetchResult);
 
-@property (nonatomic, copy) NSString *callbackId;
+@property (nonatomic, copy) NSString *callback;
 @property(nonatomic, copy) Completion completionHandler;
 
 - (void)register:(CDVInvokedUrlCommand*)command;

@@ -56,7 +56,9 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
-    [self application:application performFetchWithCompletionHandler:completionHandler];
+    if ([userInfo objectForKey:@"content-available"]) {
+        [self application:application performFetchWithCompletionHandler:completionHandler];
+    }
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {

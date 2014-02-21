@@ -18,7 +18,9 @@
 */
 #import "BackgroundPlugin.h"
 
-@implementation BackgroundPlugin
+@implementation BackgroundPlugin {
+    BOOL fetchOnStartup;
+}
 
 @synthesize callback;
 @synthesize completionHandler;
@@ -29,6 +31,10 @@
 
     NSMutableDictionary *options = [command.arguments objectAtIndex:0];
     self.callback = [options objectForKey:@"callback"];
+    if (fetchOnStartup) {
+        [self backgroundFetch:self.completionHandler];
+        fetchOnStartup = NO;
+    }
 }
 
 - (void)setContentAvailable:(CDVInvokedUrlCommand*)command {
@@ -45,6 +51,8 @@
     if (self.callback) {
         NSString *jsCallBack = [NSString stringWithFormat:@"%@();", self.callback];
         [self.webView stringByEvaluatingJavaScriptFromString:jsCallBack];
+    } else {
+        fetchOnStartup = YES;
     }
 }
 

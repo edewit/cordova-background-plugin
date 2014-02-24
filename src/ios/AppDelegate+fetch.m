@@ -52,12 +52,13 @@
 
 - (void) application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     BackgroundPlugin *plugin = [self getCommandInstance:@"BackgroundFetch"];
-    [plugin performSelectorOnMainThread:@selector(backgroundFetch:) withObject:completionHandler waitUntilDone:YES];
+    [plugin performSelectorOnMainThread:@selector(backgroundFetch:userInfo:) withObject:completionHandler waitUntilDone:YES];
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
-    if ([userInfo objectForKey:@"content-available"]) {
-        [self application:application performFetchWithCompletionHandler:completionHandler];
+    if ([userInfo valueForKeyPath:@"aps.content-available"]) {
+        BackgroundPlugin *plugin = [self getCommandInstance:@"BackgroundFetch"];
+        [plugin backgroundFetch:completionHandler userInfo:userInfo];
     }
 }
 

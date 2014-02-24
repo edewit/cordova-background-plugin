@@ -37,6 +37,6 @@ typedef void(^Completion)(UIBackgroundFetchResult);
 - (void)register:(CDVInvokedUrlCommand*)command;
 - (void)setContentAvailable:(CDVInvokedUrlCommand*)command;
 
-- (void)backgroundFetch:(void (^)(UIBackgroundFetchResult))pFunction;
+- (void)backgroundFetch:(void (^)(UIBackgroundFetchResult))pFunction userInfo:(NSDictionary *)info;
 
 @end

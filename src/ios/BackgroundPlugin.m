@@ -32,7 +32,7 @@
     NSMutableDictionary *options = [command.arguments objectAtIndex:0];
     self.callback = [options objectForKey:@"callback"];
     if (fetchOnStartup) {
-        [self backgroundFetch:self.completionHandler];
+        [self backgroundFetch:self.completionHandler userInfo:nil ];
         fetchOnStartup = NO;
     }
 }
@@ -44,17 +44,40 @@
     self.completionHandler((UIBackgroundFetchResult) [type intValue]);
 }
 
-- (void)backgroundFetch:(void (^)(UIBackgroundFetchResult))handler {
+- (void)backgroundFetch:(void (^)(UIBackgroundFetchResult))handler userInfo:(NSDictionary *)userInfo {
     NSLog(@"Background Fetch");
 
     self.completionHandler = handler;
     if (self.callback) {
-        NSString *jsCallBack = [NSString stringWithFormat:@"%@();", self.callback];
+        NSString *jsCallBack = [NSString stringWithFormat:@"%@(%@);", self.callback, [self toJson:userInfo]];
         [self.webView stringByEvaluatingJavaScriptFromString:jsCallBack];
     } else {
         fetchOnStartup = YES;
     }
 }
 
+- (NSMutableString *)toJson:(NSDictionary *)userInfo {
+    NSMutableString *jsonStr = [NSMutableString stringWithString:@"{"];
+    if (userInfo) {
+        [self parseDictionary:userInfo intoJSON:jsonStr];
+    }
+
+    [jsonStr appendString:@"}"];
+    return jsonStr;
+}
+
+- (void)parseDictionary:(NSDictionary *)inDictionary intoJSON:(NSMutableString *)jsonString {
+    NSArray *keys = [inDictionary allKeys];
+    NSString *key;
+
+    for (key in keys) {
+        id thisObject = [inDictionary objectForKey:key];
+
+        if ([thisObject isKindOfClass:[NSDictionary class]])
+            [self parseDictionary:thisObject intoJSON:jsonString];
+        else
+            [jsonString appendFormat:@"'%@':'%@',", key, [inDictionary objectForKey:key]];
+    }
+}
 
 @end

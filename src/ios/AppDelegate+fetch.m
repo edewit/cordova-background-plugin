@@ -52,7 +52,7 @@
 
 - (void) application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     BackgroundPlugin *plugin = [self getCommandInstance:@"BackgroundFetch"];
-    [plugin performSelectorOnMainThread:@selector(backgroundFetch:userInfo:) withObject:completionHandler waitUntilDone:YES];
+    [plugin backgroundFetch:completionHandler userInfo:nil ];
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {

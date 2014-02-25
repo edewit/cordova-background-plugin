@@ -26,11 +26,14 @@
 @synthesize completionHandler;
 
 - (void)register:(CDVInvokedUrlCommand*)command {
-    NSLog(@"register");
+    NSLog(@"register %@", command.callbackId);
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert];
 
-    NSMutableDictionary *options = [command.arguments objectAtIndex:0];
-    self.callback = [options objectForKey:@"callback"];
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
+    [result setKeepCallback:[NSNumber numberWithBool:YES]];
+    [self.commandDelegate sendPluginResult:result callbackId:callback];
+    self.callback = command.callbackId;
+
     if (fetchOnStartup) {
         [self backgroundFetch:self.completionHandler userInfo:nil ];
         fetchOnStartup = NO;
@@ -49,34 +52,11 @@
 
     self.completionHandler = handler;
     if (self.callback) {
-        NSString *jsCallBack = [NSString stringWithFormat:@"%@(%@);", self.callback, [self toJson:userInfo]];
-        [self.webView stringByEvaluatingJavaScriptFromString:jsCallBack];
+        NSDictionary *message = [userInfo objectForKey:@"aps"];
+        CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:message];
+        [self.commandDelegate sendPluginResult:result callbackId:callback];
     } else {
         fetchOnStartup = YES;
-    }
-}
-
-- (NSMutableString *)toJson:(NSDictionary *)userInfo {
-    NSMutableString *jsonStr = [NSMutableString stringWithString:@"{"];
-    if (userInfo) {
-        [self parseDictionary:userInfo intoJSON:jsonStr];
-    }
-
-    [jsonStr appendString:@"}"];
-    return jsonStr;
-}
-
-- (void)parseDictionary:(NSDictionary *)inDictionary intoJSON:(NSMutableString *)jsonString {
-    NSArray *keys = [inDictionary allKeys];
-    NSString *key;
-
-    for (key in keys) {
-        id thisObject = [inDictionary objectForKey:key];
-
-        if ([thisObject isKindOfClass:[NSDictionary class]])
-            [self parseDictionary:thisObject intoJSON:jsonString];
-        else
-            [jsonString appendFormat:@"'%@':'%@',", key, [inDictionary objectForKey:key]];
     }
 }
 

@@ -30,26 +30,25 @@ var backgroundFetch = {
      * Registers the device for background fetch.
      * @param {String} callback - callback to be executed to check if there is content availble
      * @returns {void}
+     * @example
+        
+        backgroundFetch.register(
+            function() {
+                console.log('fetching stuff in background');
+                //... actual fetching
+                // if depening if there was new data or not...
+                backgroundFetch.setContentAvailable(backgroundFetch.BackgroundFetchResult.NewData);
+            });
+        );
      */
     register: function(callback) {
-        return exec(null, null, 'BackgroundFetch', 'register', [{'callback': callback}]);
+        return exec(callback, null, 'BackgroundFetch', 'register', []);
     },
 
     /**
      * Call this function to tell the OS if there was data or not so it can schedule the next fetch operation
      * @param {int} dataType - one of the BackgroundFetchResults or 0 new data 1 no data or 2 failed
      * @returns {void}
-     * @example
-        
-        backgroundFetch.register({'ecb': 'fetchingContent'});
-        ...
-
-        function fetchingContent() {
-            console.log('fetching stuff in background');
-            //... actual fetching
-            // if depening if there was new data or not...
-            backgroundFetch.setContentAvailable(backgroundFetch.BackgroundFetchResult.NewData);
-        });
      */
     setContentAvailable: function(dataType) {
         return exec(null, null, "BackgroundFetch", "setContentAvailable", [{type: dataType}]);

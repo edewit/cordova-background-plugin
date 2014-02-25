@@ -54,6 +54,7 @@
     if (self.callback) {
         NSDictionary *message = [userInfo objectForKey:@"aps"];
         CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:message];
+        [result setKeepCallback:[NSNumber numberWithBool:YES]];
         [self.commandDelegate sendPluginResult:result callbackId:callback];
     } else {
         fetchOnStartup = YES;

@@ -6,19 +6,23 @@ This plugin supports two iOS 7 APIs for updating your app’s UI and content in 
 Here is how you use it:
 
 ```js
-backgroundFetch.register('fetching');
+backgroundFetch.register(
+     function() {
+         console.log('fetching stuff in background');
+         //... actual fetching
+         // if depening if there was new data or not...
+         backgroundFetch.setContentAvailable(backgroundFetch.BackgroundFetchResult.NewData);
+     });
+ );
 ```
 
-'fetching' is a name of the function exectuted when the os will poll your application to see if ther is content available. When the call is done you'll have to let the os know if there was content or not so it can schedule the next call.
+The function exectuted when the os will poll your application to see if ther is content available. When the call is done you'll have to let the os know if there was content or not so it can schedule the next call.
 
 ```js
-function fetching() {
-    //fetching the content and afterward if successfull
     backgroundFetch.setContentAvailable(backgroundFetch.BackgroundFetchResult.NewData);
-}
 ```
 
-with backgroundFetch.setContentAvailable we _tell_ iOS if there was new data or not `backgroundFetch.BackgroundFetchResult` contains all the options that we can set:
+With backgroundFetch.setContentAvailable we _tell_ iOS if there was new data or not `backgroundFetch.BackgroundFetchResult` contains all the options that we can set:
 * NewData: 0
 * NoData: 1
 * Failed: 2
